@@ -9,22 +9,16 @@ const App = () => {
     password: "",
     firstName: "",
   });
-  const [count, setCount] = useState(JSON.parse(localStorage.getItem("count")));
-  const { data, loading } = useFetch(`http://numbersapi.com/${count}/trivia`);
+
   const inputRef = useRef();
+  const hello = useRef(() => {
+    console.log("hello");
+  });
 
-  const [showHello, setShowHello] = useState();
-
-  useEffect(() => {
-    localStorage.setItem("count", JSON.stringify(count));
-  }, [count]);
+  const [showHello, setShowHello] = useState(!false);
 
   return (
     <div>
-      <div>{loading ? "...." : data}</div>
-      <div>count: {count}</div>
-      <button onClick={() => setCount((c) => c + 1)}>increment</button>
-      <br /> <br />
       <>
         <button onClick={() => setShowHello(!showHello)}>Toggle</button>
         {showHello && <Hello />}
@@ -49,6 +43,7 @@ const App = () => {
         <button
           onClick={() => {
             inputRef.current.focus();
+            hello.current();
           }}
         >
           focus
