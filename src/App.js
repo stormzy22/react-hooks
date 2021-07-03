@@ -1,60 +1,24 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Hello } from "./Hello";
-import { useForm } from "./useForm";
-import { useMeasure } from "./useMeasure";
-
+import Square from "./Square";
 const App = () => {
-  const [value, handleChange] = useForm({
-    email: "",
-    password: "",
-    firstName: "",
-  });
+  const [count, setCount] = useState(0);
+  const favoriteNums = [7, 21, 37];
 
-  const inputRef = useRef();
-  const hello = useRef(() => {
-    console.log("hello");
-  });
-
-  const [showHello, setShowHello] = useState(!false);
-
-  const [rect, inputRef2] = useMeasure([value.firstName]);
-  console.log(rect);
+  const increment = useCallback(
+    (n) => {
+      setCount((c) => c + n);
+    },
+    [setCount]
+  );
 
   return (
     <div>
-      <>
-        <button onClick={() => setShowHello(!showHello)}>Toggle</button>
-        {showHello && <Hello />}
-        <input
-          ref={inputRef}
-          name="email"
-          value={value.email}
-          onChange={handleChange}
-        />
-        <input
-          ref={inputRef2}
-          name="firstName"
-          value={value.firstName}
-          onChange={handleChange}
-        />
-
-        <input
-          type="password"
-          name="password"
-          value={value.password}
-          onChange={handleChange}
-        />
-        <button
-          onClick={() => {
-            inputRef.current.focus();
-            hello.current();
-          }}
-        >
-          focus
-        </button>
-        <div>{value.email}</div>
-        <div>{value.password}</div>
-      </>
+      <Hello increment={increment} />
+      <h1>count: {count}</h1>
+      {favoriteNums.map((n) => (
+        <Square increment={increment} key={n} n={n} />
+      ))}
     </div>
   );
 };
