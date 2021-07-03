@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Hello } from "./Hello";
-import { useFetch } from "./useFetch";
 import { useForm } from "./useForm";
+import { useMeasure } from "./useMeasure";
 
 const App = () => {
   const [value, handleChange] = useForm({
@@ -17,6 +17,9 @@ const App = () => {
 
   const [showHello, setShowHello] = useState(!false);
 
+  const [rect, inputRef2] = useMeasure([value.firstName]);
+  console.log(rect);
+
   return (
     <div>
       <>
@@ -29,6 +32,7 @@ const App = () => {
           onChange={handleChange}
         />
         <input
+          ref={inputRef2}
           name="firstName"
           value={value.firstName}
           onChange={handleChange}
