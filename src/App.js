@@ -1,60 +1,33 @@
-import React, { useReducer, useState } from "react";
+import React, { useMemo, useState } from "react";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { Index } from "./Index";
+import { About } from "./about";
+import { UserContext } from "./userContext";
 
-function reducer(state, action) {
-  switch (action.type) {
-    case "add-todo":
-      return {
-        todos: [...state.todos, { text: action.text, completed: false }],
-        todoCount: state.todoCount + 1,
-      };
-    case "toggle-todo":
-      return {
-        todos: state.todos.map((t, idx) =>
-          idx === action.idx ? { ...t, completed: !t.completed } : t
-        ),
-        todoCount: state.todoCount,
-      };
-    default:
-      return state;
-  }
-}
+const AppRouter = () => {
+  const [user, setUser] = useState(null);
 
-const App = () => {
-  const [{ todos, todoCount }, dispatch] = useReducer(reducer, {
-    todos: [],
-    todoCount: 0,
-  });
-  const [text, setText] = useState();
-
+  const value = useMemo(() => ({ user, setUser }), [user, setUser]);
   return (
-    <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          dispatch({ type: "add-todo", text });
-          setText("");
-        }}
-      >
-        <input value={text} onChange={(e) => setText(e.target.value)} />
-      </form>
-      <div>number of todo :{todoCount}</div>
-      {/* <pre>{JSON.stringify(todos, null, 2)}</pre>
-       */}
-      {todos.map((t, idx) => (
-        <h1
-          key={t.text}
-          onClick={() => dispatch({ type: "toggle-todo", idx })}
-          style={{
-            textDecoration: t.completed ? "line-through" : "",
-          }}
-        >
-          {t.text}
-        </h1>
-      ))}
-    </div>
+    <Router>
+      <div>
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/about/">About</Link>
+            </li>
+          </ul>
+        </nav>
+        <UserContext.Provider value={value}>
+          <Route path="/" exact component={Index} />
+          <Route path="/about" exact component={About} />
+        </UserContext.Provider>
+      </div>
+    </Router>
   );
 };
 
-export default App;
-
-//dispatch === action
+export default AppRouter;
