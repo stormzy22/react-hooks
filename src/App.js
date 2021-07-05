@@ -1,38 +1,60 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { useFetch } from "./useFetch";
+import React, { useReducer, useState } from "react";
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "add-todo":
+      return {
+        todos: [...state.todos, { text: action.text, completed: false }],
+        todoCount: state.todoCount + 1,
+      };
+    case "toggle-todo":
+      return {
+        todos: state.todos.map((t, idx) =>
+          idx === action.idx ? { ...t, completed: !t.completed } : t
+        ),
+        todoCount: state.todoCount,
+      };
+    default:
+      return state;
+  }
+}
 
 const App = () => {
-  const [count, setCount] = useState(0);
+  const [{ todos, todoCount }, dispatch] = useReducer(reducer, {
+    todos: [],
+    todoCount: 0,
+  });
+  const [text, setText] = useState();
 
-  const { data } = useFetch(
-    "https://raw.githubusercontent.com/ajzbc/kanye.rest/master/quotes.json"
-  );
-
-  const computeLongestWord = useCallback((arr) => {
-    if (!arr) return [];
-    let longestWord = "";
-    console.log("computing longest word");
-    JSON.parse(arr)?.forEach((sentence) =>
-      sentence.split(" ").forEach((word) => {
-        if (word.length > longestWord.length) {
-          longestWord = word;
-        }
-      })
-    );
-    return longestWord;
-  }, []);
-
-  const longestWord = useMemo(
-    () => computeLongestWord(data),
-    [data, computeLongestWord]
-  );
   return (
     <div>
-      <h1>count: {count}</h1>
-      <button onClick={() => setCount((c) => c + 1)}>increment</button>
-      <div>{longestWord}</div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          dispatch({ type: "add-todo", text });
+          setText("");
+        }}
+      >
+        <input value={text} onChange={(e) => setText(e.target.value)} />
+      </form>
+      <div>number of todo :{todoCount}</div>
+      {/* <pre>{JSON.stringify(todos, null, 2)}</pre>
+       */}
+      {todos.map((t, idx) => (
+        <h1
+          key={t.text}
+          onClick={() => dispatch({ type: "toggle-todo", idx })}
+          style={{
+            textDecoration: t.completed ? "line-through" : "",
+          }}
+        >
+          {t.text}
+        </h1>
+      ))}
     </div>
   );
 };
 
 export default App;
+
+//dispatch === action
